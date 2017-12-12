@@ -144,13 +144,13 @@ namespace TableGenerator
         private SqlConnection BuildSqlConnection()
         {
             Console.Clear();
-            Console.WriteLine("Welcome to C# Table Generator. This program generates c# classes from a MS SQL Server Database.");
-            Console.WriteLine("Supports Microsoft SQL Server and Dapper");
+            Console.WriteLine("Welcome to MSSQL to C# Mapper. This program generates C# classes from a MSSQL Server Database.");
+            Console.WriteLine("This program is designed to be used with Dapper connecting to MSSQL databases.");
             Console.WriteLine("Note: This program only currently supports trusted connection.");
-            Console.WriteLine("Source code located at: https://github.com/DominicMaas/TableGenerator");
+            Console.WriteLine("Code and documentation is located at: https://github.com/DominicMaas/MSSQL-Table-Generator");
             Console.WriteLine("-----------------------------------------------------------------------------------------------\n");
 
-            Console.Write("Enter MS SQL Server: ");
+            Console.Write("Enter MSSQL Server Host: ");
             var server = Console.ReadLine();
 
             Console.Write("Enter Database Name: ");
