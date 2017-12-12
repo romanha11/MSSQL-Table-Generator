@@ -44,12 +44,12 @@ namespace TableGenerator
                 // Build and return the class
                 var builtClass = BuildClass(tableColumns);
 
-                Console.WriteLine("------ Your Generated Class: ------");
+                Console.WriteLine("\n------ Your Generated Class: ------");
                 Console.WriteLine("-----------------------------------\n");
 
                 Console.Write(builtClass.ToString());
 
-                Console.WriteLine("\n-----------------------------------");
+                Console.WriteLine("\n\n-----------------------------------");
 
                 Console.Write("Do you want to map another class? (Y/n)");
                 var result = Console.ReadLine()?.ToLower();
@@ -116,12 +116,12 @@ namespace TableGenerator
         /// <returns></returns>
         private IEnumerable<TableInfo> GetTableInformation(SqlConnection connection)
         {
-            Console.Write("\nEnter full table name: ");
+            Console.Write("Enter full object name (table, stored procedure etc.): ");
             var tablename = Console.ReadLine();
 
             try
             {
-                Console.WriteLine("Finding and reading table...");
+                Console.WriteLine("Finding and reading object...");
                 return connection.Query<TableInfo>(
                     "SELECT name, system_type_name FROM sys.dm_exec_describe_first_result_set_for_object(OBJECT_ID(@TableName), NULL);", new
                     {
@@ -130,7 +130,7 @@ namespace TableGenerator
             }
             catch (Exception e)
             {
-                Console.WriteLine("An error occured while reading the table. Are you sure this table exists?\nError: " + e.Message + "\n\nPress any key to try again...");
+                Console.WriteLine("An error occured while reading the object. Are you sure this item exists?\nError: " + e.Message + "\n\nPress any key to try again...");
 
                 Console.ReadLine();
                 return GetTableInformation(connection);
