@@ -116,12 +116,17 @@ namespace TableGenerator
         /// <returns></returns>
         private IEnumerable<TableInfo> GetTableInformation(SqlConnection connection)
         {
-            Console.Write("Enter full object name (table, stored procedure etc.): ");
+            Console.Write("\nEnter full object name (table, stored procedure etc.): ");
             var tablename = Console.ReadLine();
+
+
+            // Get the type
+
+            //SELECT * FROM sys.objects WHERE object_id = OBJECT_ID('somethng')
 
             try
             {
-                Console.WriteLine("Finding and reading object...");
+                Console.WriteLine("Finding and reading stored procedure...");
                 return connection.Query<TableInfo>(
                     "SELECT name, system_type_name FROM sys.dm_exec_describe_first_result_set_for_object(OBJECT_ID(@TableName), NULL);", new
                     {
