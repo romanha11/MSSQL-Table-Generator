@@ -14,7 +14,7 @@ namespace TableGenerator
             { "float", "float" },
             { "smallint", "short" },
             { "int", "int" },
-            { "bitint", "double" },
+            { "bigint", "double" },
             { "varchar", "string" },
             { "char", "string" },
             { "nvarchar", "string" },
@@ -23,6 +23,22 @@ namespace TableGenerator
             { "ntext", "string" },
             { "datetime", "DateTime" },
             { "smalldatetime", "DateTime" }
+        };
+
+        public readonly Dictionary<string, string> SqlToNullableCSharpMapping = new Dictionary<string, string>
+        {
+            { "float", "float?" },
+            { "smallint", "short?" },
+            { "int", "int?" },
+            { "bigint", "double?" },
+            { "varchar", "string" },
+            { "char", "string" },
+            { "nvarchar", "string" },
+            { "nchar", "string" },
+            { "text", "string" },
+            { "ntext", "string" },
+            { "datetime", "DateTime?" },
+            { "smalldatetime", "DateTime?" }
         };
 
         static void Main(string[] args) => new Program().Start(args);
@@ -87,18 +103,36 @@ namespace TableGenerator
                 if (col.system_type_name.Contains("("))
                     colTypeStrip = col.system_type_name.Substring(0, col.system_type_name.IndexOf("("));
 
-                if (!SqlToCSharpMapping.TryGetValue(colTypeStrip.ToLower(), out string cSharpColname))
+                if (col.is_nullable)
                 {
-                    var normalColor = Console.ForegroundColor;
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine("ERROR: UNSUPPORTED COLUMN: " + colTypeStrip);
-                    Console.ForegroundColor = normalColor;
+                    if (!SqlToNullableCSharpMapping.TryGetValue(colTypeStrip.ToLower(), out string cSharpColname))
+                    {
+                        var normalColor = Console.ForegroundColor;
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine("ERROR: UNSUPPORTED COLUMN: " + colTypeStrip);
+                        Console.ForegroundColor = normalColor;
 
-                    // ignore column
-                    continue;
+                        // ignore column
+                        continue;
+                    }
+
+                    builder.AppendLine($"        public {cSharpColname} {col.name} {{ get; set; }}");
                 }
+                else
+                {
+                    if (!SqlToCSharpMapping.TryGetValue(colTypeStrip.ToLower(), out string cSharpColname))
+                    {
+                        var normalColor = Console.ForegroundColor;
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine("ERROR: UNSUPPORTED COLUMN: " + colTypeStrip);
+                        Console.ForegroundColor = normalColor;
 
-                builder.AppendLine($"        public {cSharpColname} {col.name} {{ get; set; }}");
+                        // ignore column
+                        continue;
+                    }
+
+                    builder.AppendLine($"        public {cSharpColname} {col.name} {{ get; set; }}");
+                }
             }
 
             builder.Append(
@@ -128,7 +162,7 @@ namespace TableGenerator
             {
                 Console.WriteLine("Finding and reading stored procedure...");
                 return connection.Query<TableInfo>(
-                    "SELECT name, system_type_name FROM sys.dm_exec_describe_first_result_set_for_object(OBJECT_ID(@TableName), NULL);", new
+                    "SELECT name, system_type_name, is_nullable FROM sys.dm_exec_describe_first_result_set_for_object(OBJECT_ID(@TableName), NULL);", new
                     {
                         TableName = tablename
                     });
