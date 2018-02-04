@@ -13,8 +13,10 @@ namespace TableGenerator
         {
             { "float", "float" },
             { "smallint", "short" },
+            { "bit", "bool" },
             { "int", "int" },
             { "bigint", "double" },
+            { "tinyint", "byte" },
             { "varchar", "string" },
             { "char", "string" },
             { "nvarchar", "string" },
@@ -29,8 +31,10 @@ namespace TableGenerator
         {
             { "float", "float?" },
             { "smallint", "short?" },
+            { "bit", "bool?" },
             { "int", "int?" },
             { "bigint", "double?" },
+            { "tinyint", "byte?" },
             { "varchar", "string" },
             { "char", "string" },
             { "nvarchar", "string" },
@@ -54,7 +58,7 @@ namespace TableGenerator
                 Console.Clear();
 
                 // Get the table columns
-                var tableColumns = GetTableInformation(connection).ToList();
+                var tableColumns = GetTableInformation(connection).Distinct().ToList();
                 Console.WriteLine($"Table read successfully, found {tableColumns.Count} column/s!");
 
                 // Build and return the class
@@ -150,7 +154,7 @@ namespace TableGenerator
         /// <returns></returns>
         private IEnumerable<TableInfo> GetTableInformation(SqlConnection connection)
         {
-            Console.Write("\nEnter full object name (table, stored procedure etc.): ");
+            Console.Write("\nEnter full stored procedure name: ");
             var tablename = Console.ReadLine();
 
 
@@ -162,7 +166,7 @@ namespace TableGenerator
             {
                 Console.WriteLine("Finding and reading stored procedure...");
                 return connection.Query<TableInfo>(
-                    "SELECT name, system_type_name, is_nullable FROM sys.dm_exec_describe_first_result_set_for_object(OBJECT_ID(@TableName), NULL);", new
+                    "SELECT * FROM (SELECT name, system_type_name, is_nullable, column_ordinal, ROW_NUMBER() OVER(PARTITION BY name ORDER BY column_ordinal) rn FROM sys.dm_exec_describe_first_result_set_for_object(OBJECT_ID(@TableName), NULL)) a WHERE rn = 1 ORDER BY column_ordinal", new
                     {
                         TableName = tablename
                     });
