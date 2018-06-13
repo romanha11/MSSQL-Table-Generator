@@ -122,7 +122,7 @@ namespace TableGenerator
 
                     var fieldName = "_" + Char.ToLowerInvariant(col.name[0]) + col.name.Substring(1);
 
-                    builder.AppendLine($"        public {cSharpColname} {col.name}");
+                    builder.AppendLine($"        public partial {cSharpColname} {col.name}");
                     builder.AppendLine($"        {{");
                     builder.AppendLine($"            get => {fieldName};");
                     builder.AppendLine($"            set");
@@ -237,7 +237,7 @@ namespace TableGenerator
             }
             catch (Exception e)
             {
-                Console.WriteLine($"An error occured while trying to connect to the server. Make sure you typed the correct information.\nPress any key to try again...");
+                Console.WriteLine($"An error occured while trying to connect to the server. Make sure you typed the correct information. Message:\n{e.Message}\n\nPress any key to try again...");
 
                 // Wait for user input and then try build the connection again
                 Console.ReadLine();
