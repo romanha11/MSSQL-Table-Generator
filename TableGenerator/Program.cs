@@ -96,7 +96,7 @@ namespace TableGenerator
                 "using System;\n\n" +
                 "namespace TableGenerator\n" +
                 "{\n" +
-                $"    public class {className}\n" +
+                $"    public partial class {className}\n" +
                 "    {\n"
             );
 
@@ -122,7 +122,7 @@ namespace TableGenerator
 
                     var fieldName = "_" + Char.ToLowerInvariant(col.name[0]) + col.name.Substring(1);
 
-                    builder.AppendLine($"        public partial {cSharpColname} {col.name}");
+                    builder.AppendLine($"        public {cSharpColname} {col.name}");
                     builder.AppendLine($"        {{");
                     builder.AppendLine($"            get => {fieldName};");
                     builder.AppendLine($"            set");
