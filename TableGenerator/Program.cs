@@ -45,7 +45,7 @@ namespace TableGenerator
             { "smalldatetime", "DateTime?" }
         };
 
-        static void Main(string[] args) => new Program().Start(args);
+        private static void Main(string[] args) => new Program().Start(args);
 
         private void Start(string[] args)
         {
@@ -120,7 +120,21 @@ namespace TableGenerator
                         continue;
                     }
 
-                    builder.AppendLine($"        public {cSharpColname} {col.name} {{ get; set; }}");
+                    var fieldName = "_" + Char.ToLowerInvariant(col.name[0]) + col.name.Substring(1);
+
+                    builder.AppendLine($"        public {cSharpColname} {col.name}");
+                    builder.AppendLine($"        {{");
+                    builder.AppendLine($"            get => {fieldName};");
+                    builder.AppendLine($"            set");
+                    builder.AppendLine($"            {{");
+                    builder.AppendLine($"                if ({fieldName} == value)");
+                    builder.AppendLine($"                    return;");
+                    builder.AppendLine($" ");
+                    builder.AppendLine($"                {fieldName} = value;");
+                    builder.AppendLine($"                RaisePropertyChanged();");
+                    builder.AppendLine($"            }}");
+                    builder.AppendLine($"        }}\n");
+                    builder.AppendLine($"        private {cSharpColname} {fieldName};\n\n");
                 }
                 else
                 {
@@ -135,7 +149,21 @@ namespace TableGenerator
                         continue;
                     }
 
-                    builder.AppendLine($"        public {cSharpColname} {col.name} {{ get; set; }}");
+                    var fieldName = "_" + Char.ToLowerInvariant(col.name[0]) + col.name.Substring(1);
+
+                    builder.AppendLine($"        public {cSharpColname} {col.name}");
+                    builder.AppendLine($"        {{");
+                    builder.AppendLine($"            get => {fieldName};");
+                    builder.AppendLine($"            set");
+                    builder.AppendLine($"            {{");
+                    builder.AppendLine($"                if ({fieldName} == value)");
+                    builder.AppendLine($"                    return;");
+                    builder.AppendLine($" ");
+                    builder.AppendLine($"                {fieldName} = value;");
+                    builder.AppendLine($"                RaisePropertyChanged();");
+                    builder.AppendLine($"            }}");
+                    builder.AppendLine($"        }}\n");
+                    builder.AppendLine($"        private {cSharpColname} {fieldName};\n\n");
                 }
             }
 
@@ -156,7 +184,6 @@ namespace TableGenerator
         {
             Console.Write("\nEnter full stored procedure name: ");
             var tablename = Console.ReadLine();
-
 
             // Get the type
 
